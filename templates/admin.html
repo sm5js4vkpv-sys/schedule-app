@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Админ-панель — Расписание</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body class="admin-body">
+
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">⚙</span>
+        <div>
+            <h1>Админ-панель</h1>
+            <p class="subtitle">Управление справочниками и расписанием</p>
+        </div>
+    </div>
+    <div class="controls">
+        <span class="user-chip">👤 {{ user.full_name or user.username }} (админ)</span>
+        <a href="/" class="btn btn-ghost"> К расписанию</a>
+        <a href="/logout" class="btn btn-danger">Выйти</a>
+    </div>
+</header>
+
+<main class="admin-main">
+    <aside class="admin-sidebar">
+        <button class="admin-nav-btn active" data-section="groups"> Группы</button>
+        <button class="admin-nav-btn" data-section="teachers"> Преподаватели</button>
+        <button class="admin-nav-btn" data-section="subjects"> Дисциплины</button>
+        <button class="admin-nav-btn" data-section="classrooms"> Кабинеты</button>
+        <button class="admin-nav-btn" data-section="lessons"> Занятия</button>
+    </aside>
+
+    <section class="admin-content">
+
+        <!-- Группы -->
+        <div class="admin-section active" id="section-groups">
+            <h2>Группы</h2>
+            <form id="form-group" class="admin-form">
+                <input type="hidden" id="group-id">
+                <input type="text" id="group-name" placeholder="Название (например, П-21)" required>
+                <input type="text" id="group-speciality" placeholder="Специальность">
+                <input type="number" id="group-course" placeholder="Курс" min="1" max="6">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-ghost" onclick="resetForm('group')">Очистить</button>
+            </form>
+            <div id="list-groups" class="admin-list"></div>
+        </div>
+
+        <!-- Преподаватели -->
+        <div class="admin-section" id="section-teachers">
+            <h2>Преподаватели</h2>
+            <form id="form-teacher" class="admin-form">
+                <input type="hidden" id="teacher-id">
+                <input type="text" id="teacher-name" placeholder="ФИО" required>
+                <input type="text" id="teacher-short" placeholder="Краткое (ИВ)">
+                <input type="color" id="teacher-color" value="#3498db">
+                <div class="checkbox-list" id="teacher-subjects"></div>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-ghost" onclick="resetForm('teacher')">Очистить</button>
+            </form>
+            <div id="list-teachers" class="admin-list"></div>
+        </div>
+
+        <!-- Дисциплины -->
+        <div class="admin-section" id="section-subjects">
+            <h2>Дисциплины</h2>
+            <form id="form-subject" class="admin-form">
+                <input type="hidden" id="subject-id">
+                <input type="text" id="subject-name" placeholder="Полное название" required>
+                <input type="text" id="subject-short" placeholder="Краткое (ИНФ)">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-ghost" onclick="resetForm('subject')">Очистить</button>
+            </form>
+            <div id="list-subjects" class="admin-list"></div>
+        </div>
+
+        <!-- Кабинеты -->
+        <div class="admin-section" id="section-classrooms">
+            <h2>Кабинеты</h2>
+            <form id="form-classroom" class="admin-form">
+                <input type="hidden" id="classroom-id">
+                <input type="text" id="classroom-name" placeholder="Номер (305)" required>
+                <input type="text" id="classroom-type" placeholder="Тип (Компьютерный)">
+                <input type="number" id="classroom-seats" placeholder="Мест">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-ghost" onclick="resetForm('classroom')">Очистить</button>
+            </form>
+            <div id="list-classrooms" class="admin-list"></div>
+        </div>
+
+        <!-- Занятия -->
+        <div class="admin-section" id="section-lessons">
+            <h2>Занятия</h2>
+            <p class="admin-hint">Добавляйте и редактируйте занятия через основное расписание или форму ниже.</p>
+            <form id="form-lesson" class="admin-form">
+                <input type="hidden" id="lesson-id">
+                <select id="lesson-group" required></select>
+                <select id="lesson-teacher" required></select>
+                <select id="lesson-subject" required></select>
+                <select id="lesson-classroom"></select>
+                <select id="lesson-day" required>
+                    <option>Понедельник</option><option>Вторник</option>
+                    <option>Среда</option><option>Четверг</option>
+                    <option>Пятница</option><option>Суббота</option>
+                </select>
+                <select id="lesson-week1">
+                    <option value="">1 нед.: —</option>
+                    <option value="1">1 нед.: 1 пара</option>
+                    <option value="2">1 нед.: 2 пара</option>
+                    <option value="3">1 нед.: 3 пара</option>
+                    <option value="4">1 нед.: 4 пара</option>
+                    <option value="5">1 нед.: 5 пара</option>
+                    <option value="6">1 нед.: 6 пара</option>
+                </select>
+                <select id="lesson-week2">
+                    <option value="">2 нед.: —</option>
+                    <option value="1">2 нед.: 1 пара</option>
+                    <option value="2">2 нед.: 2 пара</option>
+                    <option value="3">2 нед.: 3 пара</option>
+                    <option value="4">2 нед.: 4 пара</option>
+                    <option value="5">2 нед.: 5 пара</option>
+                    <option value="6">2 нед.: 6 пара</option>
+                </select>
+                <input type="text" id="lesson-type" placeholder="Тип (Лекция)" value="Лекция">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-ghost" onclick="resetForm('lesson')">Очистить</button>
+            </form>
+            <div id="list-lessons" class="admin-list"></div>
+        </div>
+
+    </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/static/js/admin.js"></script>
+</body>
+</html>

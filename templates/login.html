@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Вход — Расписание</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-card">
+    <div class="auth-logo">📅</div>
+    <h1 class="auth-title">Электронная доска расписания</h1>
+    <p class="auth-subtitle">Войдите или зарегистрируйтесь, чтобы продолжить</p>
+
+    <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Вход</button>
+        <button class="auth-tab" data-tab="register">Регистрация</button>
+    </div>
+
+    <form id="form-login" class="auth-form">
+        <label>Логин<input type="text" id="login-username" required autocomplete="username"></label>
+        <label>Пароль<input type="password" id="login-password" required autocomplete="current-password"></label>
+        <button type="submit" class="btn btn-primary btn-block">Войти</button>
+        <p class="auth-hint">Демо-админ: <b>admin / admin123</b></p>
+    </form>
+
+    <form id="form-register" class="auth-form hidden">
+        <label>ФИО<input type="text" id="reg-fullname" placeholder="Иванов Иван"></label>
+        <label>Логин<input type="text" id="reg-username" required autocomplete="username"></label>
+        <label>Пароль<input type="password" id="reg-password" required autocomplete="new-password" minlength="4"></label>
+        <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+        <p class="auth-hint">После регистрации вы получите роль «студент» — только просмотр расписания.</p>
+    </form>
+
+    <p id="auth-error" class="auth-error hidden"></p>
+</div>
+
+<script>
+const tabs = document.querySelectorAll('.auth-tab');
+const formLogin = document.getElementById('form-login');
+const formReg = document.getElementById('form-register');
+const errorEl = document.getElementById('auth-error');
+
+tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    if (t.dataset.tab === 'login') {
+        formLogin.classList.remove('hidden');
+        formReg.classList.add('hidden');
+    } else {
+        formLogin.classList.add('hidden');
+        formReg.classList.remove('hidden');
+    }
+    errorEl.classList.add('hidden');
+}));
+
+function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+}
+
+formLogin.addEventListener('submit', async e => {
+    e.preventDefault();
+    const body = {
+        username: document.getElementById('login-username').value,
+        password: document.getElementById('login-password').value
+    };
+    const res = await fetch('/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { showError(data.error || 'Ошибка входа'); return; }
+    window.location.href = data.role === 'admin' ? '/admin' : '/';
+});
+
+formReg.addEventListener('submit', async e => {
+    e.preventDefault();
+    const body = {
+        username: document.getElementById('reg-username').value,
+        password: document.getElementById('reg-password').value,
+        full_name: document.getElementById('reg-fullname').value
+    };
+    const res = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { showError(data.error || 'Ошибка регистрации'); return; }
+    window.location.href = '/';
+});
+</script>
+</body>
+</html>

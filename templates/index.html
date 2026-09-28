@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Расписание — электронная доска</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1> Электронная доска расписания</h1>
+        <div class="controls">
+        {% if user and user.role == 'admin' %}
+            <a href="/admin" class="btn btn-ghost">⚙ Админка</a>
+        {% endif %}
+        <span class="user-chip"> {{ user.full_name or user.username }}</span>
+        <button id="btn-stats" class="btn btn-ghost"> Статистика</button>
+        <button id="btn-add" class="btn btn-primary"> Добавить занятие</button>
+        <button id="btn-save" class="btn btn-ghost"> Сохранить JSON</button>
+        <a href="/logout" class="btn btn-danger">Выйти</a>
+    </div>
+</header>
+
+<main>
+    <section id="board-container">
+        <div id="week-switch">
+            <button class="week-btn active" data-week="1">1 неделя</button>
+            <button class="week-btn" data-week="2">2 неделя</button>
+            <button class="week-btn" data-week="0">Обе недели</button>
+        </div>
+        <div id="board"></div>
+    </section>
+
+    <aside id="sidebar">
+        <h2>Преподаватели</h2>
+        <div id="teachers-panel"></div>
+    </aside>
+</main>
+
+<!-- Модальное окно занятия -->
+<div id="modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Добавление занятия</h2>
+        <form id="lesson-form">
+            <input type="hidden" id="lesson-id">
+
+            <label>Группа:
+                <select id="f-group" required></select>
+            </label>
+
+            <label>День:
+                <select id="f-day" required>
+                    <option>Понедельник</option>
+                    <option>Вторник</option>
+                    <option>Среда</option>
+                    <option>Четверг</option>
+                    <option>Пятница</option>
+                    <option>Суббота</option>
+                </select>
+            </label>
+
+            <label>Преподаватель:
+                <select id="f-teacher" required></select>
+            </label>
+
+            <label>Дисциплина:
+                <select id="f-subject" required></select>
+            </label>
+
+            <label>1 неделя — пара:
+                <select id="f-week1">
+                    <option value="">—</option>
+                    <option value="1">1 пара</option>
+                    <option value="2">2 пара</option>
+                    <option value="3">3 пара</option>
+                    <option value="4">4 пара</option>
+                    <option value="5">5 пара</option>
+                    <option value="6">6 пара</option>
+                </select>
+            </label>
+
+            <label>2 неделя — пара:
+                <select id="f-week2">
+                    <option value="">—</option>
+                    <option value="1">1 пара</option>
+                    <option value="2">2 пара</option>
+                    <option value="3">3 пара</option>
+                    <option value="4">4 пара</option>
+                    <option value="5">5 пара</option>
+                    <option value="6">6 пара</option>
+                </select>
+            </label>
+
+            <label>Кабинет:
+                <select id="f-classroom"></select>
+            </label>
+
+            <label>Тип занятия:
+                <select id="f-type">
+                    <option>Лекция</option>
+                    <option>Практика</option>
+                    <option>Лабораторная</option>
+                    <option>Семинар</option>
+                </select>
+            </label>
+
+            <div class="modal-actions">
+                <button type="button" id="btn-delete" class="danger hidden">🗑 Удалить</button>
+                <button type="button" id="btn-cancel">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Статистика -->
+<div id="stats-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2> Нагрузка преподавателей</h2>
+        <div id="stats-content"></div>
+        <div class="modal-actions">
+            <button type="button" id="btn-stats-close">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
